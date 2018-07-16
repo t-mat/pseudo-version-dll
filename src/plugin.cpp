@@ -24,7 +24,7 @@ struct Path : std::array<wchar_t, MAX_PATH+1> {
 static Path getModuleFilenameW(HMODULE h) {
     std::array<wchar_t, MAX_PATH> moduleName;
     GetModuleFileNameW(h, moduleName.data(), static_cast<UINT>(moduleName.size()));
-	return Path(moduleName.data());
+    return Path(moduleName.data());
 }
 
 static void recursiveFileEnumerator(const wchar_t* path, const std::function<void(const wchar_t*)>& func) {
@@ -51,7 +51,8 @@ namespace plugin {
 void loadPluginDlls() {
     unloadPluginDlls();
 
-    std::array<wchar_t,MAX_PATH> basePath;
+#if 0
+	std::array<wchar_t,MAX_PATH> basePath;
     {
         // https://stackoverflow.com/a/6924332
         HMODULE h = nullptr;
@@ -65,7 +66,10 @@ void loadPluginDlls() {
         GetModuleFileNameW(h, basePath.data(), static_cast<UINT>(basePath.size()));
         DEBUG_TRACE(L"basePath=[%s]", basePath.data());
     }
-
+#else
+	Path basePath;
+	GetModuleFileName(nullptr, basePath.data(), static_cast<DWORD>(basePath.size()));
+#endif
     Path pluginsPath = Path::make(L"%s%s", basePath.data(), L".plugins");
     DEBUG_TRACE(L"pluginsPath=[%s]", pluginsPath);
 
