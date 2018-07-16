@@ -21,6 +21,11 @@ struct Path : std::array<wchar_t, MAX_PATH+1> {
     }
 };
 
+static Path getModuleFilenameW(HMODULE h) {
+    std::array<wchar_t, MAX_PATH> moduleName;
+    GetModuleFileNameW(h, moduleName.data(), static_cast<UINT>(moduleName.size()));
+	return Path(moduleName.data());
+}
 
 static void recursiveFileEnumerator(const wchar_t* path, const std::function<void(const wchar_t*)>& func) {
     WIN32_FIND_DATAW wfd;
@@ -42,6 +47,7 @@ static void recursiveFileEnumerator(const wchar_t* path, const std::function<voi
 }
 
 
+namespace plugin {
 void loadPluginDlls() {
     unloadPluginDlls();
 
@@ -57,11 +63,11 @@ void loadPluginDlls() {
             return;
         }
         GetModuleFileNameW(h, basePath.data(), static_cast<UINT>(basePath.size()));
-        DEBUG_TRACE(L"%s: basePath=[%s]", APPNAME, basePath.data());
+        DEBUG_TRACE(L"basePath=[%s]", basePath.data());
     }
 
     Path pluginsPath = Path::make(L"%s%s", basePath.data(), L".plugins");
-    DEBUG_TRACE(L"%s: pluginsPath=[%s]", APPNAME, pluginsPath);
+    DEBUG_TRACE(L"pluginsPath=[%s]", pluginsPath);
 
     std::vector<Path> pluginFilenames;
     recursiveFileEnumerator(pluginsPath, [&](const wchar_t* path) {
@@ -71,13 +77,12 @@ void loadPluginDlls() {
 
     for(const auto& pluginFilename : pluginFilenames) {
         auto* filename = static_cast<const wchar_t*>(pluginFilename);
-        DEBUG_TRACE(L"%s: filename %s", APPNAME, filename);
         auto hm = LoadLibraryW(filename);
         if(hm == nullptr) {
-            DEBUG_TRACE(L"%s: FAILED TO LOAD %s", APPNAME, filename);
+            DEBUG_TRACE(L"FAILED TO LOAD %s", filename);
         } else {
             hModules.push_back(hm);
-            DEBUG_TRACE(L"%s: load %s (%p)", APPNAME, filename, hm);
+            DEBUG_TRACE(L"load %s (%p)", filename, hm);
         }
     }
 }
@@ -87,20 +92,20 @@ void unloadPluginDlls() {
     for(auto it = hModules.rbegin(); it != hModules.rend(); ++it) {
         const auto h = *it;
         if(h != nullptr) {
-#if defined(_DEBUG) || defined(USE_DEBUG_TRACE)
-            std::array<wchar_t, 4096> moduleName;
-            GetModuleFileNameW(h, moduleName.data(), static_cast<UINT>(moduleName.size()));
-            DEBUG_TRACE(L"%s: unload %s (%p)", APPNAME, moduleName.data(), h);
-#endif
+            DEBUG_TRACE(L"unload %s (%p)", getModuleFilenameW(h).data(), h);
             FreeLibrary(h);
         }
     }
     hModules.clear();
 }
 
+} // plugin
+
 #else
 
+namespace plugin {
 void loadPluginDlls() {}
 void unloadPluginDlls() {}
+}
 
 #endif

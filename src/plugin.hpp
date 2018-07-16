@@ -1,3 +1,5 @@
 ﻿#pragma once
-void loadPluginDlls();
-void unloadPluginDlls();
+namespace plugin {
+	void loadPluginDlls();
+	void unloadPluginDlls();
+}
