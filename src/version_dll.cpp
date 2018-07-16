@@ -1,5 +1,6 @@
 ﻿#include "common.hpp"
 #include "version_dll.hpp"
+#include <array>
 
 ///////////////////////////////////////////////////////////////
 static HMODULE hModuleVersionDll = nullptr;
@@ -11,15 +12,15 @@ void loadGenuineVersionDll() {
     }
 
     // systemDirectory : "C:\Windows\System32"
-    wchar_t systemDirectory[MAX_PATH] = {};
-    GetSystemDirectoryW(systemDirectory, _countof(systemDirectory));
+    std::array<wchar_t, MAX_PATH> systemDirectory;
+    GetSystemDirectoryW(systemDirectory.data(), static_cast<UINT>(systemDirectory.size()));
 
     // fullpathDllName : "C:\Windows\System32\version.dll"
-    wchar_t fullpathDllName[MAX_PATH] = {};
-    swprintf_s(fullpathDllName, L"%s\\%s", systemDirectory, L"version.dll");
+    std::array<wchar_t, MAX_PATH> fullpathDllName;
+    swprintf_s(fullpathDllName.data(), fullpathDllName.size(), L"%s\\%s", systemDirectory.data(), L"version.dll");
 
     // Load "genuine" version.dll
-    hModuleVersionDll = LoadLibrary(fullpathDllName);
+    hModuleVersionDll = LoadLibraryW(fullpathDllName.data());
 }
 
 
