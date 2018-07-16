@@ -5,11 +5,10 @@
 ///////////////////////////////////////////////////////////////
 static HMODULE hModuleVersionDll = nullptr;
 
+namespace version_dll {
 
 void loadGenuineVersionDll() {
-    if(hModuleVersionDll != nullptr) {
-        return;
-    }
+    unloadGenuineVersionDll();
 
     // systemDirectory : "C:\Windows\System32"
     std::array<wchar_t, MAX_PATH> systemDirectory;
@@ -23,7 +22,6 @@ void loadGenuineVersionDll() {
     hModuleVersionDll = LoadLibraryW(fullpathDllName.data());
 }
 
-
 void unloadGenuineVersionDll() {
     if(hModuleVersionDll == nullptr) {
         return;
@@ -31,6 +29,8 @@ void unloadGenuineVersionDll() {
     FreeLibrary(hModuleVersionDll);
     hModuleVersionDll = nullptr;
 }
+
+} // namespace version_dll
 
 
 ///////////////////////////////////////////////////////////////

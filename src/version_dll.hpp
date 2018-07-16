@@ -1,3 +1,5 @@
 ﻿#pragma once
-void loadGenuineVersionDll();
-void unloadGenuineVersionDll();
+namespace version_dll {
+    void loadGenuineVersionDll();
+    void unloadGenuineVersionDll();
+}
