@@ -20,12 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common.hpp" />
+    <ClInclude Include="src\minhook.h" />
+    <ClInclude Include="src\minhook_api.hpp" />
     <ClInclude Include="src\outputdebugstring.hpp" />
     <ClInclude Include="src\plugin.hpp" />
     <ClInclude Include="src\version_dll.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\minhook.c" />
+    <ClCompile Include="src\minhook_api.cpp" />
     <ClCompile Include="src\outputdebugstring.cpp" />
     <ClCompile Include="src\plugin.cpp" />
     <ClCompile Include="src\version_dll.cpp" />
