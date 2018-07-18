@@ -42,18 +42,9 @@ namespace Detour {
 
 void attach() {
     using namespace MinHookApi;
-OutputDebugStringA("ATTACH: 1");
     MH_Initialize();
-OutputDebugStringA("ATTACH: 2");
-	{
-        wchar_t buf[256];
-        swprintf_s(buf, L"MH_CreateHook=%p\n", MH_CreateHook);
-        OutputDebugStringW(buf);
-	}
     MH_CreateHook(&CreateFileW, &Detour::CreateFileW, reinterpret_cast<void**>(&Original::CreateFileW));
-OutputDebugStringA("ATTACH: 3");
     MH_EnableHook(&CreateFileW);
-OutputDebugStringA("ATTACH: 4");
 }
 
 
