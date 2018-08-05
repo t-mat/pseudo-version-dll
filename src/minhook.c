@@ -19,6 +19,11 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4701 4706)
+#include "minhook/src/hde/hde32.c"
+#pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning(disable : 4701 4706)
 #include "minhook/src/hde/hde64.c"
 #pragma warning(pop)
 

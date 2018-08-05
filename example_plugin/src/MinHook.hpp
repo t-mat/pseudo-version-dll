@@ -178,8 +178,8 @@ namespace Decl {
 
 	MH_STATUS MH_Initialize();
 	MH_STATUS MH_Uninitialize();
-//	decltype(&Decl::MH_Initialize		) MH_Initialize			;
-//	decltype(&Decl::MH_Uninitialize		) MH_Uninitialize		;
+//	extern decltype(&Decl::MH_Initialize		) MH_Initialize			;
+//	extern decltype(&Decl::MH_Uninitialize		) MH_Uninitialize		;
 	extern decltype(&Decl::MH_CreateHook		) MH_CreateHook			;
 	extern decltype(&Decl::MH_CreateHookApi		) MH_CreateHookApi		;
 	extern decltype(&Decl::MH_CreateHookApiEx	) MH_CreateHookApiEx	;
@@ -190,4 +190,4 @@ namespace Decl {
 	extern decltype(&Decl::MH_QueueDisableHook	) MH_QueueDisableHook	;
 	extern decltype(&Decl::MH_ApplyQueued		) MH_ApplyQueued		;
 	extern decltype(&Decl::MH_StatusToString	) MH_StatusToString		;
-}
+} // namespace MinHookApi

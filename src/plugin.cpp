@@ -41,7 +41,9 @@ static void recursiveFileEnumerator(const wchar_t* path, const std::function<voi
                 recursiveFileEnumerator(newPath, func);
             }
         } else if((a & (FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_NORMAL)) != 0) {
-            func(newPath);
+            if(wfd.cFileName[0] != L'.') {
+                func(newPath);
+            }
         }
     } while(FindNextFile(h, &wfd));
 }
@@ -51,27 +53,11 @@ namespace plugin {
 void loadPluginDlls() {
     unloadPluginDlls();
 
-#if 0
-	std::array<wchar_t,MAX_PATH> basePath;
-    {
-        // https://stackoverflow.com/a/6924332
-        HMODULE h = nullptr;
-        if (!GetModuleHandleExW(
-              GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT
-            , (LPCWSTR) &__FUNCTION__
-            , &h)
-        ) {
-            return;
-        }
-        GetModuleFileNameW(h, basePath.data(), static_cast<UINT>(basePath.size()));
-        DEBUG_TRACE(L"basePath=[%s]", basePath.data());
-    }
-#else
-	Path basePath;
-	GetModuleFileName(nullptr, basePath.data(), static_cast<DWORD>(basePath.size()));
-#endif
+    Path basePath;
+    GetModuleFileNameW(nullptr, basePath.data(), static_cast<DWORD>(basePath.size()));
+
     Path pluginsPath = Path::make(L"%s%s", basePath.data(), L".plugins");
-    DEBUG_TRACE(L"pluginsPath=[%s]", pluginsPath);
+    DEBUG_TRACE(L"pluginsPath=[%s]", pluginsPath.data());
 
     std::vector<Path> pluginFilenames;
     recursiveFileEnumerator(pluginsPath, [&](const wchar_t* path) {

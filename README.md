@@ -32,5 +32,6 @@ For hooking purpose, you may also interest in API hook library [minhook](https:/
 
 - `version.dll` loads all DLLs which are placed in `YOUR-TARGET.exe-PATH/YOUR-TARGET.exe.plugins/`.
     - DLLs are loaded from mutiple directories recursively.
-    - DLL loading order is decided by `std::sort()` for `std::wstring` path of DLLs.
+        - If directory's or file's name is started with `.`, they're ignored. e.g. `.my-private-dir/`, `.my-private-file.dll`, etc.
+    - DLL loading order is decided by `std::sort()` for `std::wstring` paths of DLLs.
         - e.g. `YOUR-PATH\01\*.dll` is loaded before `YOUR-PATH\99\*.dll` 

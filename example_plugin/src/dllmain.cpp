@@ -1,12 +1,9 @@
 ﻿#include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#ifndef _WIN64
-#  error This code must be compiled with x64 configuration
-#endif
 #pragma comment(linker, "/DLL")
-#include "minhook.h"
-#include <stdio.h>
+#include "MinHook.hpp"
+#include "outputdebugstring.hpp"
 
 
 namespace Original {
@@ -24,9 +21,7 @@ namespace Detour {
         DWORD                 dwFlagsAndAttributes,
         HANDLE                hTemplateFile
     ) {
-        wchar_t buf[256];
-        swprintf_s(buf, L"Example Plugin Hook: CreateFileW(%s, %08x)", lpFileName, dwDesiredAccess);
-        OutputDebugStringW(buf);
+        outputDebugString(L"Example Plugin Hook: CreateFileW(%s, %08x)", lpFileName, dwDesiredAccess);
         return Original::CreateFileW(
             lpFileName,
             dwDesiredAccess,
@@ -50,7 +45,7 @@ void attach() {
 
 void detach() {
     using namespace MinHookApi;
-    MH_DisableHook(&MessageBoxW);
+    MH_DisableHook(&CreateFileW);
 }
 
 

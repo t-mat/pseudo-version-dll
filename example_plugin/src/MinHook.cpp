@@ -1,18 +1,7 @@
-﻿#include "MinHook.h"
+﻿#include "MinHook.hpp"
+#include "VersionDllPluginProvider.hpp"
+#include "outputdebugstring.hpp"
 #include <stdio.h>
-
-namespace {
-    static const char* PluginManagerDll = "version.dll";
-
-    static HMODULE GetVersionDllHmodule() {
-        HMODULE h = nullptr;
-        if(GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, PluginManagerDll, &h)) {
-            return h;
-        }
-        return nullptr;
-    }
-}
-
 
 namespace MinHookApi {
 //  decltype(&Decl::MH_Initialize       ) MH_Initialize         = nullptr;
@@ -29,24 +18,24 @@ namespace MinHookApi {
     decltype(&Decl::MH_StatusToString   ) MH_StatusToString     = nullptr;
 
     MH_STATUS MH_Initialize() {
-        HMODULE h = GetVersionDllHmodule();
+        HMODULE h = VersionDll::PluginProvider::getDllHmodule();
         if(h == nullptr) {
-            OutputDebugStringA("MH_Initialize : Can't load host DLL");
+            OutputDebugStringA("MH_Initialize : Can't load plugin provider DLL");
             return MH_ERROR_NOT_INITIALIZED;
         }
 
-//      * reinterpret_cast<void**>(&MH_Initialize       ) = GetProcAddress(h, "_MH_Initialize");
-//      * reinterpret_cast<void**>(&MH_Uninitialize     ) = GetProcAddress(h, "_MH_Uninitialize");
-        * reinterpret_cast<void**>(&MH_CreateHook       ) = GetProcAddress(h, "_MH_CreateHook");
-        * reinterpret_cast<void**>(&MH_CreateHookApi    ) = GetProcAddress(h, "_MH_CreateHookApi");
-        * reinterpret_cast<void**>(&MH_CreateHookApiEx  ) = GetProcAddress(h, "_MH_CreateHookApiEx");
-        * reinterpret_cast<void**>(&MH_RemoveHook       ) = GetProcAddress(h, "_MH_RemoveHook");
-        * reinterpret_cast<void**>(&MH_EnableHook       ) = GetProcAddress(h, "_MH_EnableHook");
-        * reinterpret_cast<void**>(&MH_DisableHook      ) = GetProcAddress(h, "_MH_DisableHook");
-        * reinterpret_cast<void**>(&MH_QueueEnableHook  ) = GetProcAddress(h, "_MH_QueueEnableHook");
-        * reinterpret_cast<void**>(&MH_QueueDisableHook ) = GetProcAddress(h, "_MH_QueueDisableHook");
-        * reinterpret_cast<void**>(&MH_ApplyQueued      ) = GetProcAddress(h, "_MH_ApplyQueued");
-        * reinterpret_cast<void**>(&MH_StatusToString   ) = GetProcAddress(h, "_MH_StatusToString");
+//      * reinterpret_cast<void**>(&MH_Initialize       ) = GetProcAddress(h, "MH_Initialize");
+//      * reinterpret_cast<void**>(&MH_Uninitialize     ) = GetProcAddress(h, "MH_Uninitialize");
+        * reinterpret_cast<void**>(&MH_CreateHook       ) = GetProcAddress(h, "MH_CreateHook_");
+        * reinterpret_cast<void**>(&MH_CreateHookApi    ) = GetProcAddress(h, "MH_CreateHookApi_");
+        * reinterpret_cast<void**>(&MH_CreateHookApiEx  ) = GetProcAddress(h, "MH_CreateHookApiEx_");
+        * reinterpret_cast<void**>(&MH_RemoveHook       ) = GetProcAddress(h, "MH_RemoveHook_");
+        * reinterpret_cast<void**>(&MH_EnableHook       ) = GetProcAddress(h, "MH_EnableHook_");
+        * reinterpret_cast<void**>(&MH_DisableHook      ) = GetProcAddress(h, "MH_DisableHook_");
+        * reinterpret_cast<void**>(&MH_QueueEnableHook  ) = GetProcAddress(h, "MH_QueueEnableHook_");
+        * reinterpret_cast<void**>(&MH_QueueDisableHook ) = GetProcAddress(h, "MH_QueueDisableHook_");
+        * reinterpret_cast<void**>(&MH_ApplyQueued      ) = GetProcAddress(h, "MH_ApplyQueued_");
+        * reinterpret_cast<void**>(&MH_StatusToString   ) = GetProcAddress(h, "MH_StatusToString_");
         return MH_OK;
     }
 
