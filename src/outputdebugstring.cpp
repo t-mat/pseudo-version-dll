@@ -1,7 +1,7 @@
-﻿#include "common.hpp"
+#include "common.hpp"
 #include <array>
 
-#if defined(USE_OUTOUT_DEBUG_STRING) && (USE_OUTOUT_DEBUG_STRING == 1)
+#if defined(USE_OUTPUT_DEBUG_STRING) && (USE_OUTPUT_DEBUG_STRING == 1)
 void outputDebugString(const wchar_t* fmt, ...) {
     va_list args;
     va_start(args, fmt);

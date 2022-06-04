@@ -17,9 +17,9 @@
 
 
 #if defined(_DEBUG)
-#define USE_OUTOUT_DEBUG_STRING 1
+#define USE_OUTPUT_DEBUG_STRING 1
 #define USE_DEBUG_TRACE 1
 #else
-#define USE_OUTOUT_DEBUG_STRING 0
+#define USE_OUTPUT_DEBUG_STRING 0
 #define USE_DEBUG_TRACE 0
 #endif
