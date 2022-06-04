@@ -1,24 +1,32 @@
 ﻿#include "common.hpp"
+#if defined(EXPORT_LZ32_DLL_FUNCTIONS) && (EXPORT_LZ32_DLL_FUNCTIONS)
 #include "lz32_dll.hpp"
-#include <array>
 
 ///////////////////////////////////////////////////////////////
 static HMODULE hModuleDll = nullptr;
+static const wchar_t dllFname[] = L"lz32";
 
 namespace lz32_dll {
 
+bool checkFname(const wchar_t* fname) {
+    return _wcsicmp(fname, dllFname) == 0;
+}
+
 void loadGenuineDll(const wchar_t* systemDirectory) {
+    DEBUG_TRACE(L"loadGenuineDll : begin, dllFname=%s", dllFname);
     unloadGenuineDll();
 
-    const wchar_t dllName[] = L"lz32.dll";
-
     // systemDirectory : "C:\Windows\System32"
-    // fullpathDllName : "C:\Windows\System32\lz32.dll"
-    std::array<wchar_t, MAX_PATH> fullpathDllName;
-    swprintf_s(fullpathDllName.data(), fullpathDllName.size(), L"%s\\%s", systemDirectory, dllName);
+    // fullpathDllName : "C:\Windows\System32\<dllFname>.dll"
+    wchar_t fullpathDllName[MAX_PATH];
+	swprintf_s(fullpathDllName, std::size(fullpathDllName), L"%s\\%s.dll", systemDirectory, dllFname);
+    DEBUG_TRACE(L"loadGenuineDll : fullpathDllName = %s", fullpathDllName);
 
-    // Load "genuine" lz32.dll
-    hModuleDll = LoadLibraryW(fullpathDllName.data());
+    // Load "genuine" DLL
+    hModuleDll = LoadLibraryW(fullpathDllName);
+    DEBUG_TRACE(L"hModuleDll(%s) = 0x%p", fullpathDllName, hModuleDll);
+
+    DEBUG_TRACE(L"loadGenuineDll : end");
 }
 
 void unloadGenuineDll() {
@@ -95,3 +103,10 @@ extern "C" INT APIENTRY LZRead(INT hFile, CHAR* lpBuffer, INT cbRead) {
 extern "C" VOID APIENTRY LZClose(INT hFile) {
     D(LZClose,hFile);
 }
+#else // EXPORT_LZ32_DLL_FUNCTIONS
+namespace lz32_dll {
+    bool checkFname(const wchar_t*) { return false; }
+    void loadGenuineDll(const wchar_t*) {}
+    void unloadGenuineDll() {}
+}
+#endif // EXPORT_LZ32_DLL_FUNCTIONS
