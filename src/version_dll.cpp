@@ -1,29 +1,32 @@
 ﻿#include "common.hpp"
+#if defined(EXPORT_VERSION_DLL_FUNCTIONS) && (EXPORT_VERSION_DLL_FUNCTIONS)
 #include "version_dll.hpp"
-#include <array>
 
 ///////////////////////////////////////////////////////////////
 static HMODULE hModuleDll = nullptr;
+static const wchar_t dllFname[] = L"version";
 
 namespace version_dll {
 
+bool checkFname(const wchar_t* fname) {
+    return _wcsicmp(fname, dllFname) == 0;
+}
+
 void loadGenuineDll(const wchar_t* systemDirectory) {
-    DEBUG_TRACE(L"loadGenuineDll - begin");
+    DEBUG_TRACE(L"loadGenuineDll : begin, dllFname=%s", dllFname);
     unloadGenuineDll();
 
-    const wchar_t dllName[] = L"version.dll";
-
     // systemDirectory : "C:\Windows\System32"
-    // fullpathDllName : "C:\Windows\System32\version.dll"
-    std::array<wchar_t, MAX_PATH> fullpathDllName;
-    swprintf_s(fullpathDllName.data(), fullpathDllName.size(), L"%s\\%s", systemDirectory, dllName);
-    DEBUG_TRACE(L"loadGenuineDll : fullpathDllName = %s", fullpathDllName.data());
+    // fullpathDllName : "C:\Windows\System32\<dllFname>.dll"
+    wchar_t fullpathDllName[MAX_PATH];
+    swprintf_s(fullpathDllName, std::size(fullpathDllName), L"%s\\%s.dll", systemDirectory, dllFname);
+    DEBUG_TRACE(L"loadGenuineDll : fullpathDllName = %s", fullpathDllName);
 
-    // Load "genuine" version.dll
-    hModuleDll = LoadLibraryW(fullpathDllName.data());
-    DEBUG_TRACE(L"hModuleDll(%s) = 0x%p", fullpathDllName.data(), hModuleDll);
+    // Load "genuine" DLL
+    hModuleDll = LoadLibraryW(fullpathDllName);
+    DEBUG_TRACE(L"hModuleDll(%s) = 0x%p", fullpathDllName, hModuleDll);
 
-    DEBUG_TRACE(L"loadGenuineDll - end");
+    DEBUG_TRACE(L"loadGenuineDll : end");
 }
 
 void unloadGenuineDll() {
@@ -170,3 +173,10 @@ extern "C" BOOL WINAPI  VerQueryValueA (LPCVOID pBlock, LPCSTR lpSubBlock, LPVOI
 extern "C" BOOL WINAPI  VerQueryValueW (LPCVOID pBlock, LPCWSTR lpSubBlock, LPVOID * lplpBuffer, PUINT puLen) {
     D(VerQueryValueW, pBlock, lpSubBlock, lplpBuffer, puLen);
 }
+#else // EXPORT_VERSION_DLL_FUNCTIONS
+namespace version_dll {
+    bool checkFname(const wchar_t*) { return false; }
+    void loadGenuineDll(const wchar_t*) {}
+    void unloadGenuineDll() {}
+}
+#endif // EXPORT_VERSION_DLL_FUNCTIONS
