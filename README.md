@@ -2,30 +2,31 @@
 
 ## What's this?
 
-This is a Visual Studio project which generates (pseudo) `version.dll`.  Since it passes all arguments to genuine `version.dll`, virtually both of them have same functionality as `version.dll`.
+This is a Visual Studio 2022 project which generates (pseudo) `version.dll`.  Since it passes all arguments to genuine `version.dll`, virtually both of them have same functionality as `version.dll`.
 
-Since almost all Windows executables load `version.dll`, you can use this project to add functionalities/hooks/hacks to target executable.
+Since many Windows executables load `version.dll`, you can use this project to add functionalities/hooks/hacks to target executable.
+This project also provides same functionality for `lz32.dll`, `hid.dll` and `msimg32.dll`.
+
 For hooking purpose, you may also interest in API hook library [minhook](https://github.com/TsudaKageyu/minhook).
 
 
 ## How to build
 
-- Open `version.sln` with Visual Studio 2017
-- Build `x64/Debug` or `x64/Release`
-- `x64/Debug/version.dll` or `x64/Release/version.dll` will be produced.
+- Run build-vs2022.bat
+- Artifacts will be put under artifacts/
+  - If you need, you can rename `version.dll` to `lz32.dll`, `hid.dll` or `msimg32.dll`.
 
 
 ## Test
 
-- Copy `C:\Windows\notepad.exe` to `C:\mytest\notepad.exe`
-- Create directory `C:\mytest\notepad.exe.plugins`
-- Open and release build `version.sln`.
-    - Copy `x64\Release\version.dll` to `C:\mytest\version.dll`
-- Open and release build `example_plugin\example_plugin.sln`.
-    - Copy `example_plugin\x64\Release\example_plugin.dll` to `C:\mytest\notepad.exe.plugins\example_plugin.dll`
+- Check your target executable by [`Dependencies`](https://github.com/lucasg/Dependencies).
+  - If your target doesn't use `version.dll` or supported DLLs, you can't use this project.
+- Put `artifacts/version.dll` (or renamed one) into your tareget's directory.  Executable and DLL must be put on the same directory.
+  - If your target is `<PATH>/<TO>/<YOUR>/<TARGET>.exe` you must put `version.dll` in `<PATH>/<TO>/<YOUR>/version.dll`
+- Put `artifacts/plugins/example_plugin.dll` to `<PATH>/<TO>/<YOUR>/<TARGET>.exe.plugins/example_plugin.dll`
 - Open [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview)
-- Run `C:\mytest\notepad.exe` and open or save some text file.
-    - DebugView shows `CreateFileW()` activities which is hooked by `example_plugin.dll`.
+- Run your`<TARGET>.exe`
+  - DebugView shows `CreateFileW()` activities which is hooked by `example_plugin.dll`.
 
 
 ## Plugin loading rules
