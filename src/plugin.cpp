@@ -49,7 +49,7 @@ namespace {
                     func(newPath);
                 }
             }
-        } while(FindNextFile(h, &wfd));
+        } while(FindNextFileW(h, &wfd));
     }
 }
 
